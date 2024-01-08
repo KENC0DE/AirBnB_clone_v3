@@ -87,17 +87,35 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
-# UPDATED CODE STARTS HERE <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>
-    @unittest.skipIf(models.storage_t != 'df', "not testing db storage")
-    def test_count(self, cls=None):
-        """Tests for count method in file storage"""
-        storage = DBStorage()
-        if cls is not None:
-            obj_len = len(storage.all(cls))
-            cls_len = len(models.storage.all(cls))
-            self.assertEqual(obj_len, cls_len)
-        else:
-            none_obj = len(storage.all())
-            cls_len = len(models.storage.all())
-            self.assertEqual(none_obj, cls_len)
-# ENDS HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count(self):
+        """Test that count method returns an accurate count of objects"""
+        models.storage.reload()
+        state = State(name="Hell")
+        user = User(email="1@2.com", password="123")
+        models.storage.new(state)
+        models.storage.new(user)
+        models.storage.save()
+        self.assertEqual(models.storage.count(), 2)
+        models.storage.delete(user)
+        models.storage.delete(state)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get(self):
+        """Test that get method returns object by valid id"""
+        models.storage.reload()
+        user = User(email="1@2.com", password="123")
+        models.storage.new(user)
+        models.storage.save()
+        user_id = user.id
+        wrong_id = '666'
+        self.assertTrue(models.storage.get(User, user_id) is user)
+        self.assertIsNone(models.storage.get(User, wrong_id))
+        models.storage.delete(user)
+        state = State(name='Heaven')
+        models.storage.new(state)
+        models.storage.save()
+        state_id = state.id
+        wrong_id = 'Toast'
+        self.assertTrue(models.storage.get(State, state_id) is state)
+        self.assertIsNone(models.storage.get(State, wrong_id))

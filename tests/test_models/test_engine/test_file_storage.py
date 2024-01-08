@@ -114,16 +114,28 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-# UPDATED CODE STARTS HERE <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>
-    def test_count(self, cls=None):
-        """Tests for count method in file storage"""
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count(self):
+        """Test that count method returns accurate count of objects"""
         storage = FileStorage()
-        if cls is not None:
-            obj_len = len(storage.all(cls))
-            cls_len = len(models.storage.all(cls))
-            self.assertEqual(obj_len, cls_len)
-        else:
-            none_obj = len(storage.all())
-            cls_len = len(models.storage.all())
-            self.assertEqual(none_obj, cls_len)
-# ENDS HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
+        # clear objects from storage
+        FileStorage._FileStorage__objects.clear()
+        storage.save()
+        # create new object of each class
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            FileStorage._FileStorage__objects[instance_key] = instance
+        storage.save()
+        self.assertEqual(storage.count(), 7)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get(self):
+        """Test that count method returns object by valid id"""
+        storage = FileStorage()
+        storage.save()
+        # create new object
+        state = State()
+        storage.new(state)
+        state_id = state.to_dict()['id']
+        self.assertTrue(storage.get(State, state_id) is state)
