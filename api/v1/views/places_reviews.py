@@ -75,7 +75,7 @@ def reviews_id_mothods(review_id):
             storage.delete(reviews[key])
             storage.save()
             return jsonify({}), 200
-        except:
+        except Exception:
             abort(404)
 
     elif request.method == "PUT":
