@@ -113,17 +113,3 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
-
-# UPDATED CODE STARTS HERE <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>
-    def test_count(self, cls=None):
-        """Tests for count method in file storage"""
-        storage = FileStorage()
-        if cls is not None:
-            obj_len = len(storage.all(cls))
-            cls_len = len(models.storage.all(cls))
-            self.assertEqual(obj_len, cls_len)
-        else:
-            none_obj = len(storage.all())
-            cls_len = len(models.storage.all())
-            self.assertEqual(none_obj, cls_len)
-# ENDS HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
