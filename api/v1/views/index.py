@@ -2,7 +2,6 @@
 """A flask file with some defined routes"""
 from flask import Flask, jsonify
 from models import storage
-from models.state import State
 from api.v1.views import app_views
 
 
@@ -12,15 +11,25 @@ def get_status():
     return jsonify({'status': 'OK'})
 
 
-@app_views.route('/stats')
+@app_views.route('/stats', strict_slashes=False)
 def get_counts():
     """ Returns counts of all storage class"""
-    counts = {
-            'amenities': storage.count('Amenity'),
-            'cities': storage.count('City'),
-            'places': storage.count('Place'),
-            'reviews': storage.count('Review'),
-            'states': storage.count('state'),
-            'users': storage.count('User')
+    from models.state import State
+    from models import amenity
+    from models import city
+    from models import place
+    from models import review
+    from models import user
+
+    classes = {
+            'amenities': Amenity,
+            'cities': City,
+            'places': Place,
+            'reviews': Review,
+            'states': state,
+            'users': User
             }
+    counts = {}
+    for key, value in in classes.items():
+        counts.update({key: storage.count(value)})
     return jsonify(counts)
