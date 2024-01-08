@@ -87,10 +87,11 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
-# UPDATED CODE STARTS HERE <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>
+# UPDATED CODE STARTS HERE <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>
+    @unittest.skipIf(models.storage_t != 'df', "not testing db storage")
     def test_count(self, cls=None):
         """Tests for count method in file storage"""
-        storage = FileStorage()
+        storage = DBStorage()
         if cls is not None:
             obj_len = len(storage.all(cls))
             cls_len = len(models.storage.all(cls))
